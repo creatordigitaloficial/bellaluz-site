@@ -82,11 +82,14 @@ section[id]{scroll-margin-top:84px}
 @keyframes fade{from{opacity:0}to{opacity:1}}
 /* mobile: a câmera começa dentro do lustre e se afasta ao entrar na tela */
 @media (max-width:1039px){
-.swing{overflow:hidden}
+.swing{overflow:hidden;position:relative}
 .swing.zoom-ready .pimg{transform-origin:50% 36%;transform:scale(2.9);will-change:transform}
+.swing.zoom-ready::after{content:"";position:absolute;inset:-2px;pointer-events:none;box-shadow:inset 0 0 110px 52px #161412,inset 0 0 40px 16px #161412,inset 0 0 12px 3px #161412}
 .swing.zoom-go .pimg{animation:pullback 3.2s cubic-bezier(.32,.08,.2,1) forwards}
+.swing.zoom-go::after{animation:unveil 3.2s linear forwards}
 }
 @keyframes pullback{from{transform:scale(2.9)}to{transform:scale(1)}}
+@keyframes unveil{0%,68%{opacity:1}100%{opacity:0}}
 .cat-strip{display:flex;flex-wrap:wrap;gap:12px 48px;padding:26px 0;border-top:1px solid rgba(255,255,255,.08)}
 .cat-strip a{font-family:Marlowe,sans-serif;font-size:20px;letter-spacing:.06em;color:#D1AB68}
 .cat-strip a:hover{color:#FFFFFF}
