@@ -80,6 +80,13 @@ section[id]{scroll-margin-top:84px}
 .pimg{display:block;height:clamp(420px,46vw,660px);width:auto;max-width:100%;object-fit:contain}
 .hero-copy{animation:fade 1.2s ease 1.1s both}
 @keyframes fade{from{opacity:0}to{opacity:1}}
+/* mobile: a câmera começa dentro do lustre e se afasta ao entrar na tela */
+@media (max-width:1039px){
+.swing{overflow:hidden}
+.swing.zoom-ready .pimg{transform-origin:50% 36%;transform:scale(2.9);will-change:transform}
+.swing.zoom-go .pimg{animation:pullback 3.2s cubic-bezier(.32,.08,.2,1) forwards}
+}
+@keyframes pullback{from{transform:scale(2.9)}to{transform:scale(1)}}
 .cat-strip{display:flex;flex-wrap:wrap;gap:12px 48px;padding:26px 0;border-top:1px solid rgba(255,255,255,.08)}
 .cat-strip a{font-family:Marlowe,sans-serif;font-size:20px;letter-spacing:.06em;color:#D1AB68}
 .cat-strip a:hover{color:#FFFFFF}
@@ -266,7 +273,7 @@ section[id]{scroll-margin-top:84px}
 </div>
 </div>
 <figure class="pend" style="position: relative; flex: 1 1 380px; max-width: 560px; margin-left: 0; margin-right: 0; margin-bottom: 0; display: flex; flex-direction: column; align-items: center">
-<div class="swing">
+<div class="swing {{zoomCls}}">
 <picture><source media="(min-width: 1040px)" srcset="/assets/img/lustre-musche-cabo.webp" width="1500" height="3012"><img class="pimg" src="/assets/img/lustre-musche.webp" alt="Lustre Musche, de folhas de vidro e metal dourado, em exposição no showroom BellaLuz" width="1500" height="2112" fetchpriority="high" decoding="async"></picture>
 </div>
 <figcaption class="muted hero-copy" style="margin-top: 16px; font-size: 13px">Em exposição no showroom: Lustre Musche</figcaption>
@@ -321,7 +328,7 @@ section[id]{scroll-margin-top:84px}
 
 <div id="lista-vip" style="display: flex; flex-wrap: wrap; gap: 48px 80px; align-items: flex-start; margin-top: clamp(80px, 9vw, 128px); scroll-margin-top: 100px">
 <div style="flex: 1 1 380px">
-<h3 class="disp" style="font-size: clamp(36px, 3.8vw, 56px)">Lista VIP da Black Friday</h3>
+<h3 class="disp" style="font-size: clamp(36px, 3.8vw, 56px)">Lista <span style="color: #D1AB68">VIP</span> da Black Friday</h3>
 <p class="muted" style="margin: 24px 0 0; max-width: 440px; font-size: 16px; font-weight: 300; line-height: 1.7">Você recebe pelo WhatsApp as peças selecionadas e as condições assim que forem liberadas. No showroom, o atendimento com arquiteto e o cappuccino da Bella continuam esperando por você.</p>
 </div>
 <div style="flex: 1 1 440px; max-width: 560px">
@@ -739,7 +746,7 @@ section[id]{scroll-margin-top:84px}
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.state = { filter: 'Todos', open: 0, step: 0, espaco: '', fase: '', arq: '', nome: '', tel: '', nomeErr: '', telErr: '', categoria: '', utm: '', now: Date.now(), vipNome: '', vipTel: '', vipCat: '', vipNomeErr: '', vipTelErr: '', vipDone: false, popOpen: false, sideOpen: false };
+    this.state = { filter: 'Todos', open: 0, step: 0, espaco: '', fase: '', arq: '', nome: '', tel: '', nomeErr: '', telErr: '', categoria: '', utm: '', now: Date.now(), vipNome: '', vipTel: '', vipCat: '', vipNomeErr: '', vipTelErr: '', vipDone: false, popOpen: false, sideOpen: false, zoom: '' };
     this._catMap = { 'pendentes': 'Pendentes', 'lustres': 'Lustres', 'arandelas': 'Arandelas', 'embutidos-e-led': 'Embutidos e LED', 'iluminacao-externa': 'Iluminação externa' };
     this._onHash = this._onHash.bind(this);
   }
@@ -768,10 +775,26 @@ class Component extends DCLogic {
       }
       this._onKey = function (ev) { if (ev.key === 'Escape' && self.state.popOpen) self._closePop(); };
       window.addEventListener('keydown', this._onKey);
+      // mobile: a câmera parte de dentro do lustre e se afasta quando ele entra na tela
+      if (window.matchMedia && window.matchMedia('(max-width: 1039px)').matches) {
+        var sw = document.querySelector('.swing');
+        if (sw) {
+          self.setState({ zoom: 'zoom-ready' });
+          var go = function () { self.setState({ zoom: 'zoom-ready zoom-go' }); };
+          if (window.IntersectionObserver) {
+            this._io = new IntersectionObserver(function (es) {
+              for (var i = 0; i < es.length; i++) {
+                if (es[i].isIntersecting) { go(); if (self._io) self._io.disconnect(); }
+              }
+            }, { threshold: 0.3 });
+            this._io.observe(sw);
+          } else { go(); }
+        }
+      }
     } catch (e) {}
   }
   componentWillUnmount() {
-    try { window.removeEventListener('hashchange', this._onHash); window.removeEventListener('keydown', this._onKey); clearInterval(this._tick); clearTimeout(this._popT); } catch (e) {}
+    try { window.removeEventListener('hashchange', this._onHash); window.removeEventListener('keydown', this._onKey); clearInterval(this._tick); clearTimeout(this._popT); if (this._io) this._io.disconnect(); } catch (e) {}
   }
   _closePop() {
     try { window.sessionStorage.setItem('bl_bfpop', '1'); } catch (e) {}
@@ -820,7 +843,7 @@ class Component extends DCLogic {
       ['lustres', 'Lustres', 'Lustres', 'A peça que dá identidade ao ambiente.', 'Esculturas de luz para salas, halls de entrada e pés-direitos altos. O primeiro olhar de quem chega na sua casa.', ['salas', 'halls', 'escadas'], 'os lustres'],
       ['arandelas', 'Arandelas', 'Arandelas', 'Luz de parede que desenha caminhos.', 'Para corredores, lavabos, cabeceiras e fachadas. Iluminação indireta que valoriza texturas e conduz o olhar.', ['corredores', 'lavabos', 'fachadas'], 'as arandelas'],
       ['embutidos-e-led', 'Embutidos e LED', 'Embutidos e LED', 'A luz técnica que faz a arquitetura aparecer.', 'Spots, trilhos e perfis de LED definidos no projeto luminotécnico. Destacam marcenaria, quadros e volumes sem chamar atenção para si.', ['marcenaria', 'sancas', 'painéis'], 'os embutidos e perfis de LED'],
-      ['iluminacao-externa', 'Iluminação externa', 'Externa', 'A casa continua bonita depois do pôr do sol.', 'Jardins, piscinas, fachadas e áreas gourmet com luz pensada para a noite e para uso ao ar livre.', ['jardins', 'piscinas', 'áreas gourmet'], 'a iluminação externa']
+      ['iluminacao-externa', 'Iluminação externa', 'Área externa', 'A casa continua bonita depois do pôr do sol.', 'Jardins, piscinas, fachadas e áreas gourmet com luz pensada para a noite e para uso ao ar livre.', ['jardins', 'piscinas', 'áreas gourmet'], 'a iluminação externa']
     ];
 
     var prodData = {
@@ -954,6 +977,7 @@ class Component extends DCLogic {
       showCd: phase !== 'end',
       cdLabel: phase === 'pre' ? 'A Black Friday começa em' : 'A condição termina em',
       cdD: two(Math.floor(diff / 86400000)), cdH: two(Math.floor(diff / 3600000) % 24), cdM: two(Math.floor(diff / 60000) % 60), cdS: two(Math.floor(diff / 1000) % 60),
+      zoomCls: st.zoom,
       bfCats: bfCats, vipChips: vipChips,
       vipNotDone: !st.vipDone, vipDone: st.vipDone,
       vipNome: st.vipNome, vipTel: st.vipTel,
