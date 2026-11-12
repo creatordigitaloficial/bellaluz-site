@@ -282,6 +282,30 @@ section[id]{scroll-margin-top:84px}
 <figcaption class="muted hero-copy" style="margin-top: 16px; font-size: 13px">Em exposição no showroom: Lustre Musche</figcaption>
 </figure>
 </div>
+</div>
+</section>
+
+<!-- CLIENTES -->
+<section id="clientes" style="padding: clamp(32px, 4vw, 56px) 0 clamp(72px, 8vw, 112px)">
+<div class="wrap">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 24px; margin-bottom: 56px">
+<h2 class="disp" style="font-size: clamp(40px, 4.6vw, 70px)">Casas que a BellaLuz iluminou</h2>
+<p class="muted" style="margin: 0; max-width: 360px; font-size: 15px; line-height: 1.6">Alguns dos clientes que confiaram o projeto de luz da sua casa ao nosso time.</p>
+</div>
+<div class="clients">
+<sc-for list="{{clientes}}" as="cl" hint-placeholder-count="10">
+<figure class="client" style="margin: 0">
+<div class="client-img"><sc-if value="{{cl.has}}" hint-placeholder-val="{{true}}"><img src="{{cl.img}}" alt="{{cl.name}}" loading="lazy"></sc-if><sc-if value="{{cl.none}}"><span class="client-ini">{{cl.ini}}</span></sc-if></div>
+<figcaption><p class="client-name">{{cl.name}}</p><p class="client-role">{{cl.role}}</p></figcaption>
+</figure>
+</sc-for>
+</div>
+</div>
+</section>
+
+<!-- ATALHOS DE CATEGORIA -->
+<section>
+<div class="wrap">
 <nav class="cat-strip" aria-label="Categorias">
 <a href="#pendentes">Pendentes</a>
 <a href="#lustres">Lustres</a>
@@ -593,24 +617,6 @@ section[id]{scroll-margin-top:84px}
 </sc-if>
 </article>
 </sc-for>
-</div>
-</section>
-
-<!-- CLIENTES -->
-<section id="clientes" style="padding: clamp(96px, 11vw, 160px) 0">
-<div class="wrap">
-<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 24px; margin-bottom: 56px">
-<h2 class="disp" style="font-size: clamp(40px, 4.6vw, 70px)">Casas que a BellaLuz iluminou</h2>
-<p class="muted" style="margin: 0; max-width: 360px; font-size: 15px; line-height: 1.6">Alguns dos clientes que confiaram o projeto de luz da sua casa ao nosso time.</p>
-</div>
-<div class="clients">
-<sc-for list="{{clientes}}" as="cl" hint-placeholder-count="10">
-<figure class="client" style="margin: 0">
-<div class="client-img"><sc-if value="{{cl.has}}" hint-placeholder-val="{{true}}"><img src="{{cl.img}}" alt="{{cl.name}}" loading="lazy"></sc-if><sc-if value="{{cl.none}}"><span class="client-ini">{{cl.ini}}</span></sc-if></div>
-<figcaption><p class="client-name">{{cl.name}}</p><p class="client-role">{{cl.role}}</p></figcaption>
-</figure>
-</sc-for>
-</div>
 </div>
 </section>
 
