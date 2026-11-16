@@ -956,6 +956,7 @@ class Component extends DCLogic {
       var te = d.length < 10 ? 'Confira o número com DDD.' : '';
       if (ne || te) { self.setState({ vipNomeErr: ne, vipTelErr: te }); return; }
       self.setState({ vipDone: true, vipNomeErr: '', vipTelErr: '' });
+      try { window.dataLayer = window.dataLayer || []; window.dataLayer.push({ event: 'lead_lista_vip', categoria: st.vipCat || '' }); } catch (x) {}
       try { window.open(vipUrl, '_blank', 'noopener'); } catch (x) {}
     };
 
