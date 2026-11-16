@@ -923,6 +923,7 @@ class Component extends DCLogic {
       var te = d.length < 10 ? 'Confira o número com DDD.' : '';
       if (ne || te) { self.setState({ nomeErr: ne, telErr: te }); return; }
       self.setState({ step: 4, nomeErr: '', telErr: '' });
+      try { window.dataLayer = window.dataLayer || []; window.dataLayer.push({ event: 'lead_consultoria', espaco: st.espaco || '', fase: st.fase || '' }); } catch (x) {}
       try { window.open(waUrl, '_blank', 'noopener'); } catch (x) {}
     };
     var summary = [st.categoria, st.espaco, st.fase, st.arq].filter(function (x) { return x; }).join(', ');
